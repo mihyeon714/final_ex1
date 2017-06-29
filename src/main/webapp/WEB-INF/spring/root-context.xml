@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+		
+	<!-- property 파일읽어오는 객체 -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" id="propertyPlaceholderConfigurer">
+		<property name="locations"><!-- 속성value 사용도 가능 -->
+			<value>classpath:mybatis/myBatis.properties</value> <!-- 이 파일을 읽겠습니다 -->
+		</property>
+	</bean>
+	
+	
+	<!-- dataSource -->
+	<bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" id="dataSource">
+		<property name="username" value="${jdbc.user}"/>
+		<property name="password" value="${jdbc.pw}"/>
+		<property name="url" value="${jdbc.url}"/>
+		<property name="driverClassName" value="${jdbc.driver}" />
+	</bean>	
+		
+	
+	<!-- Connection과 Mapper연결 -->
+	<bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="mapperLocations" value="classpath:mappers/**/*Mapper.xml"></property>
+		<!-- java부분은 배포시에 없어진다 class파일로 저장되는 기본경로:classpath(src/main/resources||...) -->
+		<property name="configLocation" value="classpath:mybatis/mybatis-config.xml"></property>
+	</bean> 
+	
+		
+	<!-- DAO에서 사용할 객체 sqlSession -->
+	<bean class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactoryBean" />
+	</bean>
+	
+	
+	<!-- 			transaction 처리하기 			 -->
+	<tx:annotation-driven/><!-- annotation 사용하기 -->
+	
+	
+	<!-- Connection 가진 dataSource 와 연결해주기 -->
+	<!-- 이것이 공통 로직들어가는 객체다 -->
+	<bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="transactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<!-- FileUpload 분리되서 날아오는 애들 합쳐줘야하는데.. 설정-->
+	<bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+		<property name="defaultEncoding" value="UTF-8"></property>
+	</bean>
+		
+		
+</beans>

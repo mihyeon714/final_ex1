@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="QnaMapper">
+  	<resultMap type="java.util.HashMap" id="myMap"></resultMap>
+  
+  	<insert id="write" statementType="CALLABLE" parameterType="java.util.Map">
+  		{ call qna_write(#{qnaDTO.writer, mode=IN},#{qnaDTO.title, mode=IN},#{qnaDTO.contents, mode=IN},#{result, mode=OUT, javaType=int, jdbcType=INTEGER}) }
+  	</insert>
+  	
+  	 <update id="update" statementType="CALLABLE" parameterType="java.util.Map">
+  		{ call qna_update(#{num, mode=IN},#{title, mode=IN},#{contents, mode=IN},#{result, mode=OUT, javaType=int, jdbcType=INTEGER}) }
+  	</update>
+  </mapper> 
